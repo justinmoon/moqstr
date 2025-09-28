@@ -3,6 +3,15 @@ import { expect, test } from "@playwright/test";
 const HAVE_CURRENT_DATA = 2;
 
 test.describe("mock meeting sandbox", () => {
+  test.beforeEach(({ page }) => {
+    page.on("console", (message) => {
+      console.log(`[browser] ${message.type()} ${message.text()}`);
+    });
+    page.on("pageerror", (error) => {
+      console.log(`[browser] pageerror ${error.message}`);
+    });
+  });
+
   test("hides mock controls by default", async ({ page }) => {
     await page.goto("/?transport=mock");
 
