@@ -4,7 +4,7 @@ const HAVE_CURRENT_DATA = 2;
 
 test.describe("mock meeting sandbox", () => {
   test("hides mock controls by default", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/?transport=mock");
 
     const localVideo = page.locator('[data-participant-id="local"] video');
     await expect(localVideo).toBeVisible();
