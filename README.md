@@ -1,6 +1,6 @@
 # js-api-meet
 
-This workspace hosts the Playwright harness for experimenting with Media over QUIC demos. The sandbox now renders a local preview plus a simulated remote participant so UI flows can be rehearsed before wiring in real transports.
+This workspace hosts the Playwright harness for experimenting with Media over QUIC demos. The sandbox now renders a local preview plus a simulated remote participant via a mock transport adapter, so UI flows can be rehearsed before wiring in real transports.
 
 ## Getting Started
 

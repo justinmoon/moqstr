@@ -24,7 +24,7 @@ test.describe("mock meeting sandbox", () => {
     expect(dimensions.height).toBe(240);
     expect(dimensions.paused).toBe(false);
 
-    const remoteTile = page.locator('[data-participant-id="remote-mock"]');
+    const remoteTile = page.locator('[data-kind="remote"]');
     await expect(remoteTile).toBeVisible();
     await expect(remoteTile).toHaveAttribute("data-speaking", "false");
 

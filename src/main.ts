@@ -1,11 +1,11 @@
 import "./style.css";
 
-import { cloneMediaStream } from "./meeting/media";
 import { MeetingState } from "./meeting/state";
 import { MeetingRenderer } from "./ui/renderer";
+import { MockMeetingTransport } from "./transport/mock";
+import type { MeetingTransport, TransportHandle } from "./transport/types";
 
 const LOCAL_ID = "local";
-const REMOTE_ID = "remote-mock";
 
 const participantsContainer = document.getElementById("participants") as HTMLDivElement | null;
 const statusEl = document.getElementById("status") as HTMLParagraphElement | null;
@@ -25,6 +25,9 @@ const renderer = new MeetingRenderer(meetingState, {
   remoteSpeakingButton: toggleRemoteSpeakingButton,
 });
 
+let transportHandle: TransportHandle | undefined;
+const transport: MeetingTransport = new MockMeetingTransport();
+
 async function init(): Promise<void> {
   try {
     statusEl.textContent = "Requesting camera + microphone…";
@@ -34,7 +37,7 @@ async function init(): Promise<void> {
       audio: true,
     });
 
-    meetingState.addParticipant({
+    const localParticipant = meetingState.addParticipant({
       id: LOCAL_ID,
       name: "You",
       kind: "local",
@@ -43,13 +46,9 @@ async function init(): Promise<void> {
       speaking: false,
     });
 
-    meetingState.addParticipant({
-      id: REMOTE_ID,
-      name: "Remote (mock)",
-      kind: "remote",
-      stream: cloneMediaStream(localStream),
-      muted: false,
-      speaking: false,
+    transportHandle = await transport.start({
+      state: meetingState,
+      localParticipant,
     });
 
     toggleMicButton.addEventListener("click", () => {
@@ -71,6 +70,12 @@ async function init(): Promise<void> {
         speaking: !remote.speaking,
       });
     });
+
+    window.addEventListener("beforeunload", () => {
+      transportHandle?.stop().catch((error) => {
+        console.warn("failed to stop transport", error);
+      });
+    });
   } catch (error) {
     console.error("Unable to initialise mock meeting", error);
     statusEl.textContent = "Failed to acquire camera or microphone. See console for details.";
@@ -79,6 +84,9 @@ async function init(): Promise<void> {
 
     // Clean up listeners so the renderer no longer attempts updates.
     renderer.destroy();
+    await transportHandle?.stop().catch((err) => {
+      console.warn("failed to stop transport after error", err);
+    });
   }
 }
 
