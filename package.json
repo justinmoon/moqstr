@@ -10,6 +10,19 @@
     "test:e2e": "playwright test",
     "test:e2e:headed": "playwright test --headed"
   },
+  "dependencies": {
+    "@kixelated/hang": "file:../moq/js/hang",
+    "@kixelated/moq": "file:../moq/js/moq",
+    "@kixelated/signals": "file:../moq/js/signals",
+    "@huggingface/transformers": "^3.7.2",
+    "@kixelated/libavjs-webcodecs-polyfill": "^0.5.5",
+    "@libav.js/variant-opus-af": "^6.8.8",
+    "async-mutex": "^0.5.0",
+    "comlink": "^4.4.2",
+    "dequal": "^2.0.3",
+    "zod": "^4.1.11",
+    "@kixelated/web-transport-ws": "^0.1.2"
+  },
   "devDependencies": {
     "@playwright/test": "^1.55.1",
     "typescript": "^5.6.3",

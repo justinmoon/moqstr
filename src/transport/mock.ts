@@ -1,11 +1,16 @@
 import { cloneMediaStream } from "../meeting/media";
 import type { MeetingState } from "../meeting/state";
 import type { Participant } from "../meeting/types";
-import type { MeetingTransport, TransportHandle, TransportOptions } from "./types";
+import type {
+  MeetingTransport,
+  SyntheticRemoteControls,
+  TransportHandle,
+  TransportOptions,
+} from "./types";
 
 let counter = 0;
 
-export class MockMeetingTransport implements MeetingTransport {
+export class MockMeetingTransport implements MeetingTransport, SyntheticRemoteControls {
   #state?: MeetingState;
   #local?: Participant;
   #remotes = new Map<string, Participant>();

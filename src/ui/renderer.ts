@@ -13,6 +13,7 @@ export type MeetingRendererOptions = {
   remoteSpeakingButton: HTMLButtonElement;
   addRemoteButton?: HTMLButtonElement;
   removeRemoteButton?: HTMLButtonElement;
+  allowRemoteSpeakingToggle?: boolean;
 };
 
 type ParticipantTile = {
@@ -25,8 +26,11 @@ type ParticipantTile = {
 export class MeetingRenderer {
   #tiles = new Map<string, ParticipantTile>();
   #subscriptions: Array<() => void> = [];
+  #allowRemoteSpeakingToggle: boolean;
 
   constructor(private readonly state: MeetingState, private readonly options: MeetingRendererOptions) {
+    this.#allowRemoteSpeakingToggle = options.allowRemoteSpeakingToggle ?? true;
+
     const listener = (participant: Participant, type: "participant-added" | "participant-updated" | "participant-removed") => {
       if (type === "participant-removed") {
         this.#removeTile(participant.id);
@@ -163,7 +167,7 @@ export class MeetingRenderer {
     const remotes = this.state.getRemoteParticipants();
     const firstRemote = remotes[0];
     if (firstRemote) {
-      this.options.remoteSpeakingButton.disabled = false;
+      this.options.remoteSpeakingButton.disabled = !this.#allowRemoteSpeakingToggle;
       this.options.remoteSpeakingButton.textContent = firstRemote.speaking ? "Mark remote as listening" : "Mark remote as speaking";
     } else {
       this.options.remoteSpeakingButton.disabled = true;
