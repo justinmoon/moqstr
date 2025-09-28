@@ -4,6 +4,21 @@ const HAVE_CURRENT_DATA = 2;
 
 test.describe("mock meeting sandbox", () => {
   test.beforeEach(({ page }) => {
+    page.addInitScript(() => {
+      const original = navigator.mediaDevices?.getUserMedia?.bind(navigator.mediaDevices);
+      if (!navigator.mediaDevices) return;
+      navigator.mediaDevices.getUserMedia = async (constraints) => {
+        if (original) {
+          try {
+            return await original(constraints);
+          } catch {
+            return new MediaStream();
+          }
+        }
+        return new MediaStream();
+      };
+    });
+
     page.on("console", (message) => {
       console.log(`[browser] ${message.type()} ${message.text()}`);
     });
