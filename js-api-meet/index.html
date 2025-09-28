@@ -3,16 +3,25 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Fake Camera Preview</title>
-    <link rel="stylesheet" href="/src/style.css" />
+    <title>Mock Meeting Sandbox</title>
   </head>
   <body>
-    <main>
-      <h1>Fake Camera Preview</h1>
-      <p>This page requests camera access and plays the stream below.</p>
-      <video id="preview" playsinline autoplay muted></video>
-      <p id="status">Requesting camera access…</p>
+    <main class="app">
+      <header class="app__header">
+        <h1>Mock Meeting Sandbox</h1>
+        <p class="app__subtitle">Local preview plus a simulated remote participant for UI/dev testing.</p>
+      </header>
+
+      <section class="controls" aria-label="Meeting controls">
+        <button id="toggle-mic" type="button">Mute microphone</button>
+        <button id="toggle-remote-speaking" type="button">Toggle remote speaking</button>
+      </section>
+
+      <section class="participants" id="participants" aria-live="polite" aria-label="Participants grid"></section>
+
+      <p id="status" class="status">Initializing…</p>
     </main>
+
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
