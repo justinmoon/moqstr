@@ -119,8 +119,21 @@ export class MoqMeetingTransport implements MeetingTransport {
     const canvas = document.createElement("canvas");
     canvas.width = 320;
     canvas.height = 240;
+    Object.assign(canvas.style, {
+      position: "fixed",
+      width: "1px",
+      height: "1px",
+      top: "0",
+      left: "0",
+      opacity: "0",
+      pointerEvents: "none",
+      zIndex: "-1",
+    });
+    document.body.appendChild(canvas);
 
     const renderer = new Watch.Video.Renderer(broadcast.video, { canvas });
+    renderer.source.enabled.set(true);
+    renderer.paused.set(false);
     const stream = canvas.captureStream(30);
     const emitter = new Watch.Audio.Emitter(broadcast.audio, {
       muted: false,
@@ -178,6 +191,10 @@ export class MoqMeetingTransport implements MeetingTransport {
 
       for (const effect of resources.effects) {
         effect.close();
+      }
+
+      if (resources.canvas.isConnected) {
+        resources.canvas.remove();
       }
     }
   }
