@@ -17,6 +17,21 @@
         packages = {
           inherit (moqPkgs) moq-relay;
           default = moqPkgs.moq-relay;
+          ci = pkgs.writeShellApplication {
+            name = "ci";
+            runtimeInputs = [
+              pkgs.bash
+              pkgs.coreutils
+              pkgs.findutils
+              pkgs.gnugrep
+              pkgs.gnused
+              pkgs.git
+              pkgs.nodejs_22
+              pkgs.bun
+              moqPkgs.moq-relay
+            ];
+            text = builtins.readFile ./scripts/ci.sh;
+          };
         };
 
         devShells.default = pkgs.mkShell {

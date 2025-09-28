@@ -3,17 +3,33 @@ import { expect, test } from "@playwright/test";
 const HAVE_CURRENT_DATA = 2;
 
 test.describe("mock meeting sandbox", () => {
-  test("renders local preview and responds to UI interactions", async ({ page }) => {
+  test("hides mock controls by default", async ({ page }) => {
     await page.goto("/");
 
     const localVideo = page.locator('[data-participant-id="local"] video');
     await expect(localVideo).toBeVisible();
 
-    await expect.poll(async () => {
-      return localVideo.evaluate((element) => (element as HTMLVideoElement).readyState);
-    }, {
-      message: "local video readyState did not reach HAVE_CURRENT_DATA",
-    }).toBeGreaterThanOrEqual(HAVE_CURRENT_DATA);
+    await expect(page.getByRole("button", { name: /Mark remote as speaking/i })).toHaveCount(0);
+    await expect(page.getByRole("button", { name: /Add mock remote/i })).toHaveCount(0);
+    await expect(page.locator('[data-kind="remote"]')).toHaveCount(0);
+  });
+
+  test("renders local preview and responds to UI interactions", async ({ page }) => {
+    await page.goto("/?mockControls=1&transport=mock");
+
+    const localVideo = page.locator('[data-participant-id="local"] video');
+    await expect(localVideo).toBeVisible();
+
+    await expect
+      .poll(
+        async () => {
+          return localVideo.evaluate((element) => (element as HTMLVideoElement).readyState);
+        },
+        {
+          message: "local video readyState did not reach HAVE_CURRENT_DATA",
+        },
+      )
+      .toBeGreaterThanOrEqual(HAVE_CURRENT_DATA);
 
     const dimensions = await localVideo.evaluate((element) => {
       const media = element as HTMLVideoElement;

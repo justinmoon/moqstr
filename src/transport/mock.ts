@@ -29,8 +29,6 @@ export class MockMeetingTransport implements MeetingTransport, SyntheticRemoteCo
       },
     };
 
-    this.addRemoteParticipant();
-
     return handle;
   }
 
@@ -39,7 +37,7 @@ export class MockMeetingTransport implements MeetingTransport, SyntheticRemoteCo
       throw new Error("MockMeetingTransport must be started before adding remotes");
     }
 
-    const remote = this.#createRemoteParticipant(this.#state, this.#local);
+    const remote = this.#createRemoteParticipant(this.#local);
     this.#remotes.set(remote.id, remote);
     this.#state.addParticipant(remote);
     return remote;
@@ -59,7 +57,7 @@ export class MockMeetingTransport implements MeetingTransport, SyntheticRemoteCo
     return participant;
   }
 
-  #createRemoteParticipant(state: MeetingState, local: Participant): Participant {
+  #createRemoteParticipant(local: Participant): Participant {
     const index = counter++;
     const id = `remote-mock-${index}`;
     const stream = cloneMediaStream(local.stream);

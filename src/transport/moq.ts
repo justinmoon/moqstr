@@ -1,11 +1,11 @@
-import { Effect } from "@kixelated/signals";
 import { Moq, Publish, Watch } from "@kixelated/hang";
 import { Room } from "@kixelated/hang/meet";
+import { Effect } from "@kixelated/signals";
 
 import type { MeetingState } from "../meeting/state";
 import type { Participant } from "../meeting/types";
-import type { MeetingTransport, TransportHandle, TransportOptions } from "./types";
 import { MockMeetingTransport } from "./mock";
+import type { MeetingTransport, TransportHandle, TransportOptions } from "./types";
 
 export type MoqTransportConfig = {
   relayUrl: string;
@@ -49,8 +49,12 @@ export class MoqMeetingTransport implements MeetingTransport {
         : Moq.Path.from(participantId);
       this.#localPath = broadcastPath;
 
-      const audioTrack = localParticipant.stream.getAudioTracks()[0] as Publish.Audio.Source | undefined;
-      const videoTrack = localParticipant.stream.getVideoTracks()[0] as Publish.Video.Source | undefined;
+      const audioTrack = localParticipant.stream.getAudioTracks()[0] as
+        | Publish.Audio.Source
+        | undefined;
+      const videoTrack = localParticipant.stream.getVideoTracks()[0] as
+        | Publish.Video.Source
+        | undefined;
 
       this.#broadcast = new Publish.Broadcast({
         connection: this.#connection,
@@ -186,7 +190,9 @@ export class MoqMeetingTransport implements MeetingTransport {
     if (resources) {
       resources.renderer.close();
       resources.emitter.close();
-      resources.stream.getTracks().forEach((track) => track.stop());
+      resources.stream.getTracks().forEach((track) => {
+        track.stop();
+      });
       this.#remoteResources.delete(path);
 
       for (const effect of resources.effects) {
@@ -231,7 +237,9 @@ export class MoqMeetingTransport implements MeetingTransport {
     for (const resources of this.#remoteResources.values()) {
       resources.renderer.close();
       resources.emitter.close();
-      resources.stream.getTracks().forEach((track) => track.stop());
+      resources.stream.getTracks().forEach((track) => {
+        track.stop();
+      });
       for (const effect of resources.effects) {
         effect.close();
       }

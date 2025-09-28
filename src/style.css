@@ -42,6 +42,12 @@ body {
   align-items: center;
 }
 
+.controls__mock {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
 .controls button {
   background: #2563eb;
   color: #fff;
@@ -50,7 +56,9 @@ body {
   border-radius: 999px;
   font-weight: 600;
   cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .controls button:hover,
@@ -86,12 +94,19 @@ body {
   border-radius: 1rem;
   background: rgba(2, 6, 23, 0.8);
   border: 2px solid transparent;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .participant[data-speaking="true"] {
   border-color: #fbbf24;
   box-shadow: 0 0 0 0.35rem rgba(251, 191, 36, 0.25);
+}
+
+.participant__status {
+  font-size: 0.85rem;
+  color: #38bdf8;
 }
 
 .participant[data-muted="true"] .participant__status {
@@ -116,11 +131,6 @@ body {
 
 .participant__name {
   font-weight: 600;
-}
-
-.participant__status {
-  font-size: 0.85rem;
-  color: #38bdf8;
 }
 
 .status {

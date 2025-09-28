@@ -6,26 +6,8 @@
     <title>Mock Meeting Sandbox</title>
   </head>
   <body>
-    <main class="app">
-      <header class="app__header">
-        <h1>Mock Meeting Sandbox</h1>
-        <p class="app__subtitle">Local preview plus a simulated remote participant for UI/dev testing.</p>
-      </header>
+    <div id="root"></div>
 
-      <section class="controls" aria-label="Meeting controls">
-        <button id="toggle-mic" type="button">Mute microphone</button>
-        <button id="toggle-remote-speaking" type="button">Toggle remote speaking</button>
-        <div class="controls__group" role="group" aria-label="Mock transport controls">
-          <button id="add-remote" type="button">Add mock remote</button>
-          <button id="remove-remote" type="button">Remove mock remote</button>
-        </div>
-      </section>
-
-      <section class="participants" id="participants" aria-live="polite" aria-label="Participants grid"></section>
-
-      <p id="status" class="status">Initializing…</p>
-    </main>
-
-    <script type="module" src="/src/main.ts"></script>
+    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

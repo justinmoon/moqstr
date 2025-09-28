@@ -1,6 +1,6 @@
-import { defineConfig, devices } from "@playwright/test";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { defineConfig, devices } from "@playwright/test";
 
 const currentDir = path.dirname(fileURLToPath(import.meta.url));
 const fixturesDir = path.resolve(currentDir, "fixtures");
@@ -11,7 +11,7 @@ export default defineConfig({
   testDir: "./tests",
   timeout: 60_000,
   expect: {
-    timeout: 10_000
+    timeout: 10_000,
   },
   retries: process.env.CI ? 2 : 0,
   use: {
@@ -27,20 +27,23 @@ export default defineConfig({
         "--ignore-certificate-errors",
         "--mute-audio",
         `--use-file-for-fake-video-capture=${fakeVideo}`,
-        `--use-file-for-fake-audio-capture=${fakeAudio}`
-      ]
-    }
+        `--use-file-for-fake-audio-capture=${fakeAudio}`,
+      ],
+    },
   },
   projects: [
     {
       name: "chromium",
-      use: { ...devices["Desktop Chrome"] }
-    }
+      use: { ...devices["Desktop Chrome"] },
+    },
   ],
   webServer: {
     command: "npm run dev -- --host --port 4173",
+    env: {
+      START_MOQ_RELAY: "0",
+    },
     url: "http://localhost:4173",
     reuseExistingServer: !process.env.CI,
-    timeout: 60_000
-  }
+    timeout: 60_000,
+  },
 });

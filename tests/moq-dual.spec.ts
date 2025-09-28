@@ -1,13 +1,49 @@
-import { test, expect, type Locator } from "@playwright/test";
 import { spawn } from "node:child_process";
+import { existsSync } from "node:fs";
 import net from "node:net";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { expect, type Locator, test } from "@playwright/test";
 
 const RELAY_HOST = "127.0.0.1";
 const RELAY_PORT = 4443;
 const RELAY_URL = `http://${RELAY_HOST}:${RELAY_PORT}/anon`;
 const ROOM_NAME = `playwright-room-${Date.now()}`;
+const CURRENT_DIR = path.dirname(fileURLToPath(import.meta.url));
+const DEFAULT_RELAY_CONFIG = path.resolve(CURRENT_DIR, "../config/moq-relay-dev.toml");
+
+function parseArgs(value: string | undefined): string[] {
+  if (!value) return [];
+  const matches = value.match(/(?:"[^"]*"|'[^']*'|[^\s"]+)/g);
+  if (!matches) return [];
+  return matches.map((token) => token.replace(/^['"]|['"]$/g, ""));
+}
+
+function startRelay(): ReturnType<typeof spawn> {
+  const relayBin = process.env.MOQ_RELAY_BIN;
+  const relayArgs = parseArgs(process.env.MOQ_RELAY_ARGS);
+  const relayConfig = process.env.MOQ_RELAY_CONFIG ?? DEFAULT_RELAY_CONFIG;
+
+  if (!existsSync(relayConfig)) {
+    throw new Error(`moq-relay config not found at ${relayConfig}`);
+  }
+
+  if (relayBin) {
+    const args = [...relayArgs, relayConfig];
+    const child = spawn(relayBin, args, {
+      stdio: "pipe",
+      env: { ...process.env, RUST_LOG: process.env.RUST_LOG ?? "warn" },
+    });
+    return child;
+  }
+
+  const relayCwd = path.resolve(CURRENT_DIR, "../../moq/rs");
+  return spawn("cargo", ["run", "--bin", "moq-relay", "--", "moq-relay/cfg/dev.toml"], {
+    cwd: relayCwd,
+    stdio: "pipe",
+    env: { ...process.env, RUST_LOG: process.env.RUST_LOG ?? "warn" },
+  });
+}
 
 async function waitForPort(port: number, host: string, timeoutMs = 15000): Promise<void> {
   const start = Date.now();
@@ -34,13 +70,7 @@ test.describe("MoQ transport remote playback", () => {
   let relayProcess: ReturnType<typeof spawn> | undefined;
 
   test.beforeAll(async () => {
-    const currentDir = path.dirname(fileURLToPath(import.meta.url));
-    const relayCwd = path.resolve(currentDir, "../../moq/rs");
-    relayProcess = spawn("cargo", ["run", "--bin", "moq-relay", "--", "moq-relay/cfg/dev.toml"], {
-      cwd: relayCwd,
-      stdio: "pipe",
-      env: { ...process.env, RUST_LOG: "warn" },
-    });
+    relayProcess = startRelay();
 
     relayProcess.stdout?.on("data", (chunk) => {
       console.log(`[relay] ${chunk.toString().trim()}`);
@@ -79,9 +109,14 @@ test.describe("MoQ transport remote playback", () => {
     for (const page of [pageA, pageB]) {
       const localVideo = page.locator('[data-participant-id="local"] video');
       await expect(localVideo).toBeVisible();
-      await expect.poll(async () => {
-        return localVideo.evaluate((el) => (el as HTMLVideoElement).readyState);
-      }, { message: "local readyState" }).toBeGreaterThanOrEqual(HAVE_CURRENT_DATA);
+      await expect
+        .poll(
+          async () => {
+            return localVideo.evaluate((el) => (el as HTMLVideoElement).readyState);
+          },
+          { message: "local readyState" },
+        )
+        .toBeGreaterThanOrEqual(HAVE_CURRENT_DATA);
     }
 
     // Each page should see exactly one remote participant (the other client)
@@ -93,9 +128,14 @@ test.describe("MoQ transport remote playback", () => {
 
     const checkVideo = async (locator: Locator) => {
       await expect(locator).toBeVisible();
-      await expect.poll(async () => {
-        return locator.evaluate((el) => (el as HTMLVideoElement).readyState);
-      }, { message: "remote readyState" }).toBeGreaterThanOrEqual(HAVE_CURRENT_DATA);
+      await expect
+        .poll(
+          async () => {
+            return locator.evaluate((el) => (el as HTMLVideoElement).readyState);
+          },
+          { message: "remote readyState" },
+        )
+        .toBeGreaterThanOrEqual(HAVE_CURRENT_DATA);
 
       const dims = await locator.evaluate((el) => {
         const video = el as HTMLVideoElement;

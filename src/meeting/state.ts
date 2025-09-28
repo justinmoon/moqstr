@@ -1,4 +1,10 @@
-import { MeetingEvent, MeetingEventType, MeetingListener, Participant, ParticipantUpdate } from "./types";
+import type {
+  MeetingEvent,
+  MeetingEventType,
+  MeetingListener,
+  Participant,
+  ParticipantUpdate,
+} from "./types";
 
 const EVENT_TYPES: MeetingEventType[] = [
   "participant-added",
@@ -65,7 +71,9 @@ export class MeetingState {
   }
 
   getParticipants(): Participant[] {
-    return Array.from(this.#participants.values(), (participant) => this.#cloneParticipant(participant));
+    return Array.from(this.#participants.values(), (participant) =>
+      this.#cloneParticipant(participant),
+    );
   }
 
   getLocalParticipant(): Participant | undefined {
