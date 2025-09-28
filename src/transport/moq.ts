@@ -121,8 +121,6 @@ export class MoqMeetingTransport implements MeetingTransport {
     canvas.height = 240;
 
     const renderer = new Watch.Video.Renderer(broadcast.video, { canvas });
-    renderer.source.enabled.set(true);
-    renderer.paused.set(false);
     const stream = canvas.captureStream(30);
     const emitter = new Watch.Audio.Emitter(broadcast.audio, {
       muted: false,
