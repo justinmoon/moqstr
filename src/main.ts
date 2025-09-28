@@ -3,7 +3,7 @@ import "./style.css";
 import { MeetingState } from "./meeting/state";
 import { MeetingRenderer } from "./ui/renderer";
 import { MockMeetingTransport } from "./transport/mock";
-import type { MeetingTransport, TransportHandle } from "./transport/types";
+import type { TransportHandle } from "./transport/types";
 
 const LOCAL_ID = "local";
 
@@ -11,8 +11,17 @@ const participantsContainer = document.getElementById("participants") as HTMLDiv
 const statusEl = document.getElementById("status") as HTMLParagraphElement | null;
 const toggleMicButton = document.getElementById("toggle-mic") as HTMLButtonElement | null;
 const toggleRemoteSpeakingButton = document.getElementById("toggle-remote-speaking") as HTMLButtonElement | null;
+const addRemoteButton = document.getElementById("add-remote") as HTMLButtonElement | null;
+const removeRemoteButton = document.getElementById("remove-remote") as HTMLButtonElement | null;
 
-if (!participantsContainer || !statusEl || !toggleMicButton || !toggleRemoteSpeakingButton) {
+if (
+  !participantsContainer ||
+  !statusEl ||
+  !toggleMicButton ||
+  !toggleRemoteSpeakingButton ||
+  !addRemoteButton ||
+  !removeRemoteButton
+) {
   throw new Error("Required DOM elements are missing from the page.");
 }
 
@@ -23,10 +32,12 @@ const renderer = new MeetingRenderer(meetingState, {
   status: statusEl,
   muteButton: toggleMicButton,
   remoteSpeakingButton: toggleRemoteSpeakingButton,
+  addRemoteButton,
+  removeRemoteButton,
 });
 
 let transportHandle: TransportHandle | undefined;
-const transport: MeetingTransport = new MockMeetingTransport();
+const transport = new MockMeetingTransport();
 
 async function init(): Promise<void> {
   try {
@@ -69,6 +80,14 @@ async function init(): Promise<void> {
       meetingState.updateParticipant(remote.id, {
         speaking: !remote.speaking,
       });
+    });
+
+    addRemoteButton.addEventListener("click", () => {
+      transport.addRemoteParticipant();
+    });
+
+    removeRemoteButton.addEventListener("click", () => {
+      transport.removeRemoteParticipant();
     });
 
     window.addEventListener("beforeunload", () => {

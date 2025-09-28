@@ -11,6 +11,8 @@ export type MeetingRendererOptions = {
   status: HTMLElement;
   muteButton: HTMLButtonElement;
   remoteSpeakingButton: HTMLButtonElement;
+  addRemoteButton?: HTMLButtonElement;
+  removeRemoteButton?: HTMLButtonElement;
 };
 
 type ParticipantTile = {
@@ -158,13 +160,22 @@ export class MeetingRenderer {
       this.options.muteButton.textContent = "Mute microphone";
     }
 
-    const remote = this.state.getRemoteParticipants()[0];
-    if (remote) {
+    const remotes = this.state.getRemoteParticipants();
+    const firstRemote = remotes[0];
+    if (firstRemote) {
       this.options.remoteSpeakingButton.disabled = false;
-      this.options.remoteSpeakingButton.textContent = remote.speaking ? "Mark remote as listening" : "Mark remote as speaking";
+      this.options.remoteSpeakingButton.textContent = firstRemote.speaking ? "Mark remote as listening" : "Mark remote as speaking";
     } else {
       this.options.remoteSpeakingButton.disabled = true;
       this.options.remoteSpeakingButton.textContent = "Mark remote as speaking";
+    }
+
+    if (this.options.addRemoteButton) {
+      this.options.addRemoteButton.disabled = !local;
+    }
+
+    if (this.options.removeRemoteButton) {
+      this.options.removeRemoteButton.disabled = remotes.length === 0;
     }
   }
 }

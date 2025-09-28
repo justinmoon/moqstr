@@ -24,12 +24,12 @@ test.describe("mock meeting sandbox", () => {
     expect(dimensions.height).toBe(240);
     expect(dimensions.paused).toBe(false);
 
-    const remoteTile = page.locator('[data-kind="remote"]');
-    await expect(remoteTile).toBeVisible();
-    await expect(remoteTile).toHaveAttribute("data-speaking", "false");
+    const remoteTiles = page.locator('[data-kind="remote"]');
+    await expect(remoteTiles).toHaveCount(1);
+    await expect(remoteTiles.first()).toHaveAttribute("data-speaking", "false");
 
     await page.getByRole("button", { name: /Mark remote as speaking/i }).click();
-    await expect(remoteTile).toHaveAttribute("data-speaking", "true");
+    await expect(remoteTiles.first()).toHaveAttribute("data-speaking", "true");
     await expect(page.locator("#status")).toContainText("Remote participant is speaking");
 
     await page.getByRole("button", { name: /Mute microphone|Unmute microphone/i }).click();
@@ -37,5 +37,19 @@ test.describe("mock meeting sandbox", () => {
     await expect(localTile).toHaveAttribute("data-muted", "true");
     await expect(page.locator("#status")).toContainText("Your mic is muted");
     await expect(page.getByRole("button", { name: /Unmute microphone/i })).toBeVisible();
+
+    const removeRemoteButton = page.getByRole("button", { name: /Remove mock remote/i });
+    const addRemoteButton = page.getByRole("button", { name: /Add mock remote/i });
+
+    await removeRemoteButton.click();
+    await expect(remoteTiles).toHaveCount(0);
+    await expect(page.locator("#status")).toContainText("No remote participants");
+    await expect(removeRemoteButton).toBeDisabled();
+    await expect(page.getByRole("button", { name: /Mark remote as speaking/i })).toBeDisabled();
+
+    await addRemoteButton.click();
+    await expect(remoteTiles).toHaveCount(1);
+    await expect(remoteTiles.first()).toHaveAttribute("data-speaking", "false");
+    await expect(page.getByRole("button", { name: /Mark remote as speaking/i })).toBeEnabled();
   });
 });

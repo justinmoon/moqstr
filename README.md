@@ -17,4 +17,4 @@ The app will request `getUserMedia` and render a preview in the browser.
 npm run test:e2e
 ```
 
-Chrome is launched with fake camera/microphone devices, backed by fixtures in `fixtures/camera.y4m` and `fixtures/mic.wav`, so every run sees the same deterministic media. The test confirms that the local `<video>` element receives frames, the remote mock participant renders, and the UI reacts to mute/speaking toggles.
+Chrome is launched with fake camera/microphone devices, backed by fixtures in `fixtures/camera.y4m` and `fixtures/mic.wav`, so every run sees the same deterministic media. The test confirms that the local `<video>` element receives frames, the mock transport can add/remove remote participants, and the UI reacts to mute/speaking toggles.
