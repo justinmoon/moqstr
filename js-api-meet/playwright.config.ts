@@ -1,4 +1,11 @@
 import { defineConfig, devices } from "@playwright/test";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+const currentDir = path.dirname(fileURLToPath(import.meta.url));
+const fixturesDir = path.resolve(currentDir, "fixtures");
+const fakeVideo = path.join(fixturesDir, "camera.y4m");
+const fakeAudio = path.join(fixturesDir, "mic.wav");
 
 export default defineConfig({
   testDir: "./tests",
@@ -18,7 +25,9 @@ export default defineConfig({
         "--use-fake-device-for-media-stream",
         "--allow-insecure-localhost",
         "--ignore-certificate-errors",
-        "--mute-audio"
+        "--mute-audio",
+        `--use-file-for-fake-video-capture=${fakeVideo}`,
+        `--use-file-for-fake-audio-capture=${fakeAudio}`
       ]
     }
   },

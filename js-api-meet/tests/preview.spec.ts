@@ -21,8 +21,8 @@ test.describe("fake camera preview", () => {
       return { width: media.videoWidth, height: media.videoHeight, paused: media.paused };
     });
 
-    expect(dimensions.width).toBeGreaterThan(0);
-    expect(dimensions.height).toBeGreaterThan(0);
+    expect(dimensions.width).toBe(320);
+    expect(dimensions.height).toBe(240);
     expect(dimensions.paused).toBe(false);
 
     const status = page.locator("#status");

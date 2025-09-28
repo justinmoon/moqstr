@@ -17,4 +17,4 @@ The app will request `getUserMedia` and render a preview in the browser.
 npm run test:e2e
 ```
 
-Chrome is launched with fake camera/microphone devices, so no real hardware is required. The test confirms that the `<video>` element receives frames and updates its status message.
+Chrome is launched with fake camera/microphone devices, backed by fixtures in `fixtures/camera.y4m` and `fixtures/mic.wav`, so every run sees the same deterministic media. The test confirms that the `<video>` element receives frames and updates its status message.
