@@ -98,7 +98,7 @@ test.describe("MoQ transport remote playback", () => {
     const pageA = await ctxA.newPage();
     const pageB = await ctxB.newPage();
 
-    const base = `/?transport=moq&relay=${encodeURIComponent(RELAY_URL)}&room=${ROOM_NAME}`;
+    const base = `/${ROOM_NAME}?transport=moq&relay=${encodeURIComponent(RELAY_URL)}`;
 
     await pageA.goto(`${base}&name=ClientA`);
     await pageB.goto(`${base}&name=ClientB`);

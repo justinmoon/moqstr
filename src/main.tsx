@@ -6,6 +6,7 @@ import { App } from "./App";
 import { MeetingState } from "./meeting/state";
 import { createTransport, type MoqTransportConfig, type TransportKind } from "./transport/moq";
 import { hasSyntheticRemoteControls } from "./transport/types";
+import { Onboarding } from "./onboarding";
 
 const root = document.getElementById("root");
 if (!root) {
@@ -35,65 +36,74 @@ if (transportKind === "moq" && !relayUrlParam) {
   transportKind = "mock";
 }
 
-const roomPath =
-  searchParams.get("room") ?? (import.meta.env.VITE_ROOM as string | undefined) ?? "js-api-meet";
-const storedParticipantIdKey = "jsApiMeet.participantId";
+const pathSegments = window.location.pathname.split("/").filter(Boolean);
+const roomFromPath = pathSegments[0];
+const roomFromQuery = searchParams.get("room") ?? undefined;
+const envRoom = (import.meta.env.VITE_ROOM as string | undefined) ?? "js-api-meet";
 
-const participantId = (() => {
-  const existing = localStorage.getItem(storedParticipantIdKey);
-  if (existing) return existing;
-  const generated = crypto.randomUUID();
-  localStorage.setItem(storedParticipantIdKey, generated);
-  return generated;
-})();
+const meetingRoom = roomFromQuery ?? roomFromPath ?? envRoom;
 
-const displayNameParam = searchParams.get("name");
-if (displayNameParam) {
-  localStorage.setItem("jsApiMeet.displayName", displayNameParam);
-}
-const storedDisplayName = localStorage.getItem("jsApiMeet.displayName") ?? undefined;
+if (!roomFromPath && !roomFromQuery) {
+  render(() => <Onboarding />, root);
+} else {
+  const storedParticipantIdKey = "jsApiMeet.participantId";
 
-const mockControlsEnabled = (() => {
-  const param = searchParams.get("mockControls");
-  if (param) {
-    const value = param.toLowerCase();
-    return value === "1" || value === "true";
+  const participantId = (() => {
+    const existing = localStorage.getItem(storedParticipantIdKey);
+    if (existing) return existing;
+    const generated = crypto.randomUUID();
+    localStorage.setItem(storedParticipantIdKey, generated);
+    return generated;
+  })();
+
+  const displayNameParam = searchParams.get("name");
+  if (displayNameParam) {
+    localStorage.setItem("jsApiMeet.displayName", displayNameParam);
   }
-  const env = (import.meta.env.VITE_MOCK_CONTROLS as string | undefined)?.toLowerCase();
-  return env === "1" || env === "true";
-})();
+  const storedDisplayName = localStorage.getItem("jsApiMeet.displayName") ?? undefined;
 
-const autoMockRemote = (() => {
-  if (!mockControlsEnabled) return false;
-  const param = searchParams.get("autoMockRemote");
-  if (!param) return true;
-  const value = param.toLowerCase();
-  return value !== "0" && value !== "false";
-})();
+  const mockControlsEnabled = (() => {
+    const param = searchParams.get("mockControls");
+    if (param) {
+      const value = param.toLowerCase();
+      return value === "1" || value === "true";
+    }
+    const env = (import.meta.env.VITE_MOCK_CONTROLS as string | undefined)?.toLowerCase();
+    return env === "1" || env === "true";
+  })();
 
-const transportConfig: MoqTransportConfig = {
-  relayUrl: relayUrlParam || "http://localhost:4443/anon",
-  roomPath,
-  participantId,
-  displayName: displayNameParam ?? storedDisplayName ?? "Guest",
-  autoEnableAudio: true,
-};
+  const autoMockRemote = (() => {
+    if (!mockControlsEnabled) return false;
+    const param = searchParams.get("autoMockRemote");
+    if (!param) return true;
+    const value = param.toLowerCase();
+    return value !== "0" && value !== "false";
+  })();
 
-const transport = createTransport(transportKind, transportConfig);
-const meetingState = new MeetingState();
-const syntheticTransport = hasSyntheticRemoteControls(transport) ? transport : undefined;
+  const transportConfig: MoqTransportConfig = {
+    relayUrl: relayUrlParam || "http://localhost:4443/anon",
+    roomPath: meetingRoom,
+    participantId,
+    displayName: displayNameParam ?? storedDisplayName ?? "Guest",
+    autoEnableAudio: true,
+  };
 
-render(
-  () => (
-    <App
-      meetingState={meetingState}
-      transport={transport}
-      transportConfig={transportConfig}
-      transportKind={transportKind}
-      syntheticTransport={syntheticTransport}
-      mockControlsEnabled={mockControlsEnabled}
-      autoMockRemote={autoMockRemote}
-    />
-  ),
-  root,
-);
+  const transport = createTransport(transportKind, transportConfig);
+  const meetingState = new MeetingState();
+  const syntheticTransport = hasSyntheticRemoteControls(transport) ? transport : undefined;
+
+  render(
+    () => (
+      <App
+        meetingState={meetingState}
+        transport={transport}
+        transportConfig={transportConfig}
+        transportKind={transportKind}
+        syntheticTransport={syntheticTransport}
+        mockControlsEnabled={mockControlsEnabled}
+        autoMockRemote={autoMockRemote}
+      />
+    ),
+    root,
+  );
+}
