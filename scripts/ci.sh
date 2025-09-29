@@ -10,13 +10,6 @@ log() {
 cd "${PROJECT_ROOT}"
 
 log "Installing npm dependencies"
-npm_config_yes=${npm_config_yes:-}
-
-if [[ ! -d "${PROJECT_ROOT}/../moq" ]]; then
-  log "Cloning kixelated/moq dependencies"
-  git clone --depth 1 https://github.com/kixelated/moq.git "${PROJECT_ROOT}/../moq"
-fi
-
 npm ci
 
 log "Installing Playwright browsers"
