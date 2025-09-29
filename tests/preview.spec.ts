@@ -27,19 +27,16 @@ test.describe("mock meeting sandbox", () => {
     });
   });
 
-  test("hides mock controls by default", async ({ page }) => {
-    await page.goto("/?transport=mock");
+  test("shows onboarding page", async ({ page }) => {
+    await page.goto("/");
 
-    const localVideo = page.locator('[data-participant-id="local"] video');
-    await expect(localVideo).toBeVisible();
-
-    await expect(page.getByRole("button", { name: /Mark remote as speaking/i })).toHaveCount(0);
-    await expect(page.getByRole("button", { name: /Add mock remote/i })).toHaveCount(0);
-    await expect(page.locator('[data-kind="remote"]')).toHaveCount(0);
+    await expect(page.getByRole("heading", { name: /Start a meeting/i })).toBeVisible();
+    await expect(page.getByLabel(/Meeting name/i)).toBeVisible();
+    await expect(page.getByRole("button", { name: /Start meeting/i })).toBeVisible();
   });
 
   test("renders local preview and responds to UI interactions", async ({ page }) => {
-    await page.goto("/?mockControls=1&transport=mock");
+    await page.goto("/mock-room?mockControls=1&transport=mock");
 
     const localVideo = page.locator('[data-participant-id="local"] video');
     await expect(localVideo).toBeVisible();

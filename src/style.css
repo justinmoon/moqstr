@@ -15,6 +15,104 @@ body {
   background: radial-gradient(circle at top, rgba(148, 163, 184, 0.2), transparent 55%), #020617;
 }
 
+body.onboarding {
+  background: #f8fafc;
+  color: #0f172a;
+  padding: 0;
+}
+
+.onboarding__container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  min-height: 100vh;
+  background: #f8fafc;
+  padding: 1.5rem;
+}
+
+.onboarding__card {
+  width: min(560px, 100%);
+  background: #ffffff;
+  border-radius: 1rem;
+  padding: 2.5rem;
+  box-shadow: 0 25px 60px rgba(15, 23, 42, 0.08);
+  border: 1px solid #e2e8f0;
+  display: grid;
+  gap: 1.75rem;
+}
+
+.onboarding__header h1 {
+  margin: 0 0 0.5rem;
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.onboarding__header p {
+  margin: 0;
+  color: #475569;
+}
+
+.onboarding__form {
+  display: grid;
+  gap: 1rem;
+}
+
+.onboarding__label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.onboarding__input {
+  border: 1px solid #cbd5f5;
+  border-radius: 0.75rem;
+  padding: 0.85rem 1rem;
+  font-size: 1rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.onboarding__input:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.onboarding__actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.onboarding__primary,
+.onboarding__secondary {
+  border-radius: 999px;
+  border: none;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.onboarding__primary {
+  background: #2563eb;
+  color: #fff;
+}
+
+.onboarding__secondary {
+  background: #e2e8f0;
+  color: #1e293b;
+}
+
+.onboarding__primary:hover,
+.onboarding__secondary:hover,
+.onboarding__primary:focus-visible,
+.onboarding__secondary:focus-visible {
+  transform: translateY(-1px);
+  box-shadow: 0 15px 35px rgba(37, 99, 235, 0.15);
+}
+
 .app {
   width: min(960px, 100%);
   display: grid;
